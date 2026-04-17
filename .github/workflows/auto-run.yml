@@ -1,0 +1,31 @@
+name: Price Monitor Auto Run
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # Каждый день в 06:00 UTC
+  workflow_dispatch:      # Можно запускать вручную
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4 pandas gspread oauth2client fuzzywuzzy python-Levenshtein
+
+      - name: Create credentials file
+        run: |
+          echo '${{ secrets.GOOGLE_CREDENTIALS }}' > credentials.json
+
+      - name: Run script
+        run: |
+          python main.py
